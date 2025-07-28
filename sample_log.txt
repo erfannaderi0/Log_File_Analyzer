@@ -1,0 +1,4 @@
+192.168.1.1 - - [27/Jul/2025:14:22:01 +0000] "GET /index.html HTTP/1.1" 200 1043 "-" "Mozilla/5.0"
+10.0.0.5 - - [27/Jul/2025:14:22:05 +0000] "POST /login HTTP/1.1" 302 512 "https://example.com" "Mozilla/5.0"
+192.168.1.1 - - [27/Jul/2025:14:23:01 +0000] "GET /dashboard HTTP/1.1" 200 1200 "-" "Mozilla/5.0"
+172.16.0.2 - - [27/Jul/2025:14:25:33 +0000] "GET /profile HTTP/1.1" 404 734 "-" "Chrome/91.0"
