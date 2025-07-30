@@ -3,6 +3,9 @@ from tkinter import Tk
 from tkinter.filedialog import asksaveasfilename
 import pandas as pd
 from datetime import datetime
+import os
+import platform
+import subprocess
 
 #this pattern is being used to find ip address
 ip_pattern = re.compile(r'\d{1,3}(?:\.\d{1,3}){3}')
@@ -15,7 +18,21 @@ status_pattern = re.compile(r'"\s(\d{3})\s')
 #user agent(browser and ...)
 user_agent_pattern = re.compile(r'"([^"]+)"$')
 
-def log_parser():
+def open_file(path):
+    system = platform.system()
+    try:
+        if system == "Windows":
+            os.startfile(path)
+        elif system == "Darwin":  # macOS
+            subprocess.call(["open", path])
+        elif system == "Linux":
+            subprocess.call(["xdg-open", path])
+        else:
+            print("⚠️ Auto-opening not supported on this OS.")
+    except Exception as e:
+        print(f"❌ Could not open file automatically: {e}")
+
+def log_parser(input_path, save_path):
     from collections import Counter
 
     total_requests = 0
@@ -24,7 +41,7 @@ def log_parser():
     status_counter = Counter()
     browser_counter = Counter()
 
-    with open('sample_log.txt', 'r') as file:
+    with open(input_path, 'r') as file:
         for line in file:
             ip_match = ip_pattern.search(line)
             time_match = time_pattern.search(line)
@@ -82,7 +99,10 @@ def log_parser():
             browser_df.to_excel(writer, sheet_name="Browsers", index=False)
 
         print(f"\n📁 Report saved successfully to: {save_path}")
+        open_file(save_path)
     else:
         print("❌ Export cancelled.")
          
-log_parser()
+if __name__ == "__main__":
+    # test run only if directly run (optional)
+    log_parser("sample_log.txt", "log_summary.xlsx")
