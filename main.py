@@ -1,4 +1,8 @@
 import re
+from tkinter import Tk
+from tkinter.filedialog import asksaveasfilename
+import pandas as pd
+from datetime import datetime
 
 #this pattern is being used to find ip address
 ip_pattern = re.compile(r'\d{1,3}(?:\.\d{1,3}){3}')
@@ -60,5 +64,25 @@ def log_parser():
         print("\nBrowsers Used:")
         for browser, count in browser_counter.items():
             print(f"{browser} — {count} times")
+
+    # Ask user where to save
+    Tk().withdraw()
+    # Generate a default filename with timestamp
+    filename = f"log_summary_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.xlsx"
+    save_path = asksaveasfilename(initialfile=filename, defaultextension=".xlsx", filetypes=[("Excel files", "*.xlsx")], title="Save summary report as...")
+
+    if save_path:
+        top_pages_df = pd.DataFrame(page_counter.most_common(5), columns=["Page", "Hits"])
+        status_df = pd.DataFrame(status_counter.items(), columns=["Status Code", "Count"])
+        browser_df = pd.DataFrame(browser_counter.items(), columns=["Browser", "Count"])
+
+        with pd.ExcelWriter(save_path, engine="openpyxl") as writer:
+            top_pages_df.to_excel(writer, sheet_name="Top Pages", index=False)
+            status_df.to_excel(writer, sheet_name="Status Codes", index=False)
+            browser_df.to_excel(writer, sheet_name="Browsers", index=False)
+
+        print(f"\n📁 Report saved successfully to: {save_path}")
+    else:
+        print("❌ Export cancelled.")
          
 log_parser()
